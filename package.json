@@ -1,0 +1,7 @@
+{
+	"name": "frontpage",
+	"version": "0.0.1",
+	"dependencies": {
+		"restler": "2.x.x"
+	}
+}
