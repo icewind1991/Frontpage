@@ -2,6 +2,8 @@
 	"name": "frontpage",
 	"version": "0.0.1",
 	"dependencies": {
-		"restler": "2.x.x"
+		"restler": "2.x.x",
+		"mysql": "2.x.x",
+		"node-promise": "0.5.x"
 	}
 }

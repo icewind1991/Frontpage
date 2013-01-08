@@ -1,0 +1,38 @@
+{
+	"database": {
+		"host": "localhost",
+		"user": "frontpage",
+		"password": "password",
+		"database": "frontpage"
+	},
+	"subreddits": [
+		"tf2",
+		"",
+		"all"
+	],
+	"subscriberSubreddits":[
+		"pics",
+		"gaming",
+		"worldnews",
+		"videos",
+		"todayilearned",
+		"IAmA",
+		"funny",
+		"atheism",
+		"politics",
+		"science",
+		"AskReddit",
+		"technology",
+		"WTF",
+		"announcements",
+		"bestof",
+		"AdviceAnimals",
+		"Music",
+		"aww",
+		"askscience",
+		"movies"
+	],
+	"count": 25,
+	"interval": 300,
+	"subscriberInterval": 3600
+}
