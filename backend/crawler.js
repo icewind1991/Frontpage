@@ -67,6 +67,12 @@ function savePost(post) {
 	var promise = new Promise(),
 		data = {},
 		extension;
+	if (post.domain.substr(0, 5) !== 'self.' && subDomain(post.domain)) {
+		post.domain = post.domain.replace(/^[^.]+\./g, "");
+	}
+	if (post.domain === 'youtu.be') {
+		post.domain = 'youtube.com';
+	}
 	data.position = post.position;
 	data.post_id = post.id;
 	data.up = post.ups;
@@ -82,7 +88,7 @@ function savePost(post) {
 		data.type = store.types.self;
 	} else {
 		extension = post.url.substr(-4);
-		if (post.domain === 'youtube.com' || post.domain === 'youtu.be') {
+		if (post.domain === 'youtube.com') {
 			data.type = store.types.video;
 		} else if (extension === '.jpg' || extension === '.png' || post.domain === 'imgur.com') {
 			data.type = store.types.image;
@@ -119,4 +125,31 @@ function crawl(name, count, now) {
 		});
 	});
 	return promise;
+}
+
+function subDomain(url) {
+
+	// IF THERE, REMOVE WHITE SPACE FROM BOTH ENDS
+	url = url.trim();
+
+	// IF THERE, REMOVES 'http://', 'https://' or 'ftp://' FROM THE START
+	url = url.replace(new RegExp(/^http\:\/\/|^https\:\/\/|^ftp\:\/\//i), "");
+
+	// IF THERE, REMOVES 'www.' FROM THE START OF THE STRING
+	url = url.replace(new RegExp(/^www\./i), "");
+
+	// REMOVE COMPLETE STRING FROM FIRST FORWARD SLASH ON
+	url = url.replace(new RegExp(/\/(.*)/), "");
+
+	// REMOVES '.??.??' OR '.???.??' FROM END - e.g. '.CO.UK', '.COM.AU'
+	if (url.match(new RegExp(/\.[a-z]{2,3}\.[a-z]{2}$/i))) {
+		url = url.replace(new RegExp(/\.[a-z]{2,3}\.[a-z]{2}$/i), "");
+
+		// REMOVES '.??' or '.???' or '.????' FROM END - e.g. '.US', '.COM', '.INFO'
+	} else if (url.match(new RegExp(/\.[a-z]{2,4}$/i))) {
+		url = url.replace(new RegExp(/\.[a-z]{2,4}$/i), "");
+	}
+
+	// CHECK TO SEE IF THERE IS A DOT '.' LEFT IN THE STRING
+	return !!(url.match(/\./g));
 }
