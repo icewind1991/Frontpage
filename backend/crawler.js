@@ -91,10 +91,13 @@ function savePost(post) {
 
 	store.subReddits.getId(post.subreddit).then(function (id) {
 		store.domains.getId(post.domain).then(function (domain) {
-			data.domain = domain;
-			data.subreddit = id;
-			store.items.set(data).then(function () {
-				promise.resolve();
+			store.subReddits.getId(post.source).then(function (source) {
+				data.domain = domain;
+				data.subreddit = id;
+				data.source = source;
+				store.items.set(data).then(function () {
+					promise.resolve();
+				});
 			});
 		});
 	});

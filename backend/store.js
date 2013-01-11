@@ -140,7 +140,7 @@ items.get = function (filter) {
 };
 items.set = function (item) {
 	var promise = new Promise();
-	connection.query('REPLACE INTO items SET ?', item, function (err, result) {
+	connection.query('INSERT INTO items SET ?', item, function (err, result) {
 		if (err) throw err;
 
 		promise.resolve();

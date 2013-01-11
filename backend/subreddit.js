@@ -13,14 +13,17 @@ SubReddit.prototype.getSubscribers = function () {
 };
 SubReddit.prototype.getPosts = function (count) {
 	count = count || 25;
-	var promise = new Promise();
+	var promise = new Promise(),
+		that = this;
 	restler.get('http://reddit.com/' + this.url + '.json?limit=' + count).on('complete', function (response) {
 		if (!response.data || !response.data.children) {//reddit errors fail silently
+			console.log('failed to get ' + that.name);
 			promise.resolve([]);
 		}
 		var i, children = [];
 		for (i = 0; i < response.data.children.length; i++) {
 			response.data.children[i].data.position = i + 1;
+			response.data.children[i].data.source = that.name;
 			children.push(response.data.children[i].data);
 		}
 		promise.resolve(children);
