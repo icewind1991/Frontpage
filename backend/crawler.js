@@ -25,7 +25,8 @@ function setUpSubscribers(subreddits, interval) {
 		saveSubscribers(subreddits[i]);
 	}
 	setUpSubscribers.interval = setInterval(function () {
-		console.log('log subscribers');
+		var date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ' - log subscribers');
 		for (var i = 0; i < subreddits.length; i++) {
 			saveSubscribers(subreddits[i]);
 		}
@@ -39,7 +40,8 @@ function setUpPosts(subreddits, interval, count) {
 		crawl(subreddits[i], count, now);
 	}
 	setUpPosts.interval = setInterval(function () {
-		console.log('log posts');
+		var date = new Date();
+		console.log(date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + ' - log posts');
 		var now = Date.now() / 1000;
 		for (var i = 0; i < subreddits.length; i++) {
 			crawl(subreddits[i], count, now);
