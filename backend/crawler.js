@@ -6,7 +6,7 @@ var store = require('./store');
 
 configReader.getConfig().then(function (config) {
 	store.connect(config.database).then(function () {
-		setUpPosts(config.subreddits, config.interval);
+		setUpPosts(config.subreddits, config.interval, config.count);
 		setUpSubscribers(getSubscriberSubreddits(config.subreddits, config.subscriberSubreddits), config.subscriberInterval);
 	});
 });
