@@ -81,6 +81,8 @@ ObjectsStore.prototype.get = function (id) {
 
 var subReddits = new ObjectsStore('subreddits');
 var domains = new ObjectsStore('domains');
+var postIds = new ObjectsStore('post_ids');
+var authors = new ObjectsStore('authors');
 
 var subscribers = {};
 subscribers.get = function (subreddit) {
@@ -127,23 +129,67 @@ subscribers.set = function (subreddit, count, now) {
 subscribers.cached = false;
 subscribers.cache = {};
 
-var items = {};
-items.get = function (filter) {
+var posts = {};
+posts.get = function (filter) {
 	filter = filter || true;
 	var promise = new Promise();
-	connection.query('SELECT * FROM items WHERE ?', filter, function (err, rows) {
+	connection.query('SELECT * FROM posts WHERE ?', filter, function (err, rows) {
 		if (err) throw err;
 
 		promise.resolve(rows);
 	});
 	return promise;
 };
-items.set = function (item) {
-	var promise = new Promise();
-	connection.query('INSERT INTO items SET ?', item, function (err, result) {
-		if (err) throw err;
+posts.set = function (data) {
+	var promise = new Promise(), post = {};
+	postIds.getId(data.id).then(function (id) {
+		connection.query('SELECT id FROM posts WHERE id = ?', id, function (err, rows) {
+			if (err) throw err;
+			if (rows.length === 0) {
+				authors.getId(data.author).then(function (author) {
+					subReddits.getId(data.subreddit).then(function (subreddit) {
+						domains.getId(data.domain).then(function (domain) {
+							post.id = id;
+							post.author = author;
+							post.subreddit = subreddit;
+							post.domain = domain;
+							post.nsfw = data.nsfw;
+							post.type = data.type;
+							post.create = data.create;
+							post.self_length = data.length;
+							post.title_length = data.title.length;
+							connection.query('INSERT INTO posts SET ?', post, function (err, result) {
+								if (err) throw err;
+								promise.resolve();
+							});
+						});
+					});
+				});
+			} else {
+				promise.resolve();
+			}
+		});
+	});
+	return promise;
+};
 
-		promise.resolve();
+var positions = {};
+positions.set = function (data) {
+	var promise = new Promise(), position = {};
+	postIds.getId(data.id).then(function (id) {
+		subReddits.getId(data.source).then(function (subreddit) {
+			position.id = id;
+			position.subreddit = subreddit;
+			position.time = data.crawl_time;
+			position.position = data.position;
+			position.up = data.up;
+			position.down = data.down;
+			position.comments = data.comments;
+			connection.query('INSERT INTO positions SET ?', position, function (err, result) {
+				if (err) throw err;
+				promise.resolve();
+			});
+		});
 	});
 	return promise;
 };
@@ -153,4 +199,7 @@ module.exports.subReddits = subReddits;
 module.exports.domains = domains;
 module.exports.subscribers = subscribers;
 module.exports.types = types;
-module.exports.items = items;
+module.exports.postIds = postIds;
+module.exports.authors = authors;
+module.exports.posts = posts;
+module.exports.positions = positions;

@@ -74,15 +74,15 @@ function savePost(post) {
 		post.domain = 'youtube.com';
 	}
 	data.position = post.position;
-	data.post_id = post.id;
+	data.id = post.id;
 	data.up = post.ups;
 	data.down = post.downs;
 	data.crawl_time = Date.now() / 1000;
 	data.author = post.author;
 	data.comments = post.num_comments;
 	data.create = post.created_utc;
-	data.self_length = post.selftext.length;
-	data.title_length = post.title.length;
+	data.length = post.selftext.length;
+	data.title= post.title;
 	data.nsfw = post.over_18;
 	if (post.is_self) {
 		data.type = store.types.self;
@@ -97,16 +97,12 @@ function savePost(post) {
 		}
 	}
 
-	store.subReddits.getId(post.subreddit).then(function (id) {
-		store.domains.getId(post.domain).then(function (domain) {
-			store.subReddits.getId(post.source).then(function (source) {
-				data.domain = domain;
-				data.subreddit = id;
-				data.source = source;
-				store.items.set(data).then(function () {
-					promise.resolve();
-				});
-			});
+	data.domain = post.domain;
+	data.subreddit = post.subreddit;
+	data.source = post.source;
+	store.posts.set(data).then(function () {
+		store.positions.set(data).then(function () {
+			promise.resolve();
 		});
 	});
 	return promise;
