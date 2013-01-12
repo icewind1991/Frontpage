@@ -41,7 +41,6 @@ setInterval(function () {
 }, 1000);
 
 function getSubscribers(name, promise, url) {
-	var that = this;
 	restler.get('http://reddit.com/' + url + '/about.json').on('complete', function (response) {
 		if (!response.data || !response.data.subscribers) {//reddit errors fail silently
 			console.log('sub fail ' + name);

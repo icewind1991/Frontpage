@@ -23,7 +23,7 @@ function connect(options) {
 
 function ObjectsStore(type) {
 	if (!type) {
-		throw new 'No type specified';
+		throw 'No type specified';
 	}
 	this.type = type;
 	this.cache = {};
@@ -116,7 +116,7 @@ subscribers.set = function (subreddit, count, now) {
 	connection.query('SELECT count FROM subscribers WHERE  time = ? AND id = ?', [now, subreddit], function (err, rows) {
 		if (err) throw err;
 		if (rows.length === 0) {
-			connection.query('REPLACE INTO subscribers SET ?', {time: now, id: subreddit, count: count}, function (err, result) {
+			connection.query('REPLACE INTO subscribers SET ?', {time: now, id: subreddit, count: count}, function (err) {
 				if (err) throw err;
 
 				promise.resolve();
@@ -158,7 +158,7 @@ posts.set = function (data) {
 							post.create = data.create;
 							post.self_length = data.length;
 							post.title_length = data.title.length;
-							connection.query('INSERT INTO posts SET ?', post, function (err, result) {
+							connection.query('INSERT INTO posts SET ?', post, function (err) {
 								if (err) throw err;
 								promise.resolve();
 							});
@@ -185,7 +185,7 @@ positions.set = function (data) {
 			position.up = data.up;
 			position.down = data.down;
 			position.comments = data.comments;
-			connection.query('INSERT INTO positions SET ?', position, function (err, result) {
+			connection.query('INSERT INTO positions SET ?', position, function (err) {
 				if (err) throw err;
 				promise.resolve();
 			});
