@@ -4,6 +4,7 @@
 	"dependencies": {
 		"restler": "2.x.x",
 		"mysql": "2.x.x",
-		"node-promise": "0.5.x"
+		"node-promise": "0.5.x",
+		"express": "3.x"
 	}
 }

@@ -10,6 +10,16 @@ var types = {
 	video: 3,
 	link: 4
 };
+types.get = function () {
+	var promise = new Promise();
+	promise.resolve({
+		self: 1,
+		image: 2,
+		video: 3,
+		link: 4
+	});
+	return promise;
+};
 
 function connect(options) {
 	var promise = new Promise();
@@ -158,7 +168,7 @@ posts.set = function (data) {
 							post.create = data.create;
 							post.self_length = data.length;
 							post.title_length = data.title.length;
-							connection.query('INSERT INTO posts SET ?', post, function (err) {
+							connection.query('REPLACE INTO posts SET ?', post, function (err) {
 								if (err) throw err;
 								promise.resolve();
 							});
@@ -174,6 +184,16 @@ posts.set = function (data) {
 };
 
 var positions = {};
+positions.get = function (filter) {
+	filter = filter || true;
+	var promise = new Promise();
+	connection.query('SELECT * FROM positions WHERE ?', filter, function (err, rows) {
+		if (err) throw err;
+
+		promise.resolve(rows);
+	});
+	return promise;
+};
 positions.set = function (data) {
 	var promise = new Promise(), position = {};
 	postIds.getId(data.id).then(function (id) {
