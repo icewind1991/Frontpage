@@ -209,6 +209,7 @@ $(document).ready(function () {
 		$('#pie_count').change(renderPie);
 		$('#pie_source').change(renderPie);
 		$('#pie_type').change(renderPie);
+		$('#pie_nsfw').change(renderPie);
 	});
 });
 
@@ -241,7 +242,7 @@ function renderScatter() {
 renderScatter.paper = null;
 
 function renderPie() {
-	var counts, color, count, split, source, data, other, type;
+	var counts, color, count, split, source, data, other, type, nsfw;
 	if (!renderPie.paper) {
 		renderPie.paper = Raphael("pie", 700, 700)
 	}
@@ -250,6 +251,7 @@ function renderPie() {
 	count = $('#pie_count').val();
 	source = $('#pie_source').val();
 	type = $('#pie_type').val();
+	nsfw = $('#pie_nsfw').val();
 	if (source === 'frontpage') {
 		data = Data.filter(data, {}, {maxFront: 101});
 	}
@@ -258,6 +260,10 @@ function renderPie() {
 	}
 	if (type !== 'all') {
 		data = Data.filter(data, {type: type});
+	}
+	console.log(nsfw);
+	if (nsfw !== 'all') {
+		data = Data.filter(data, {nsfwLabel: nsfw});
 	}
 	counts = Data.count(data, color);
 	counts = Data.sortObject(counts);
