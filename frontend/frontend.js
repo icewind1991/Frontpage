@@ -207,6 +207,8 @@ $(document).ready(function () {
 		renderPie();
 		$('#pie_option').change(renderPie);
 		$('#pie_count').change(renderPie);
+		$('#pie_source').change(renderPie);
+		$('#pie_type').change(renderPie);
 	});
 });
 
@@ -239,17 +241,33 @@ function renderScatter() {
 renderScatter.paper = null;
 
 function renderPie() {
-	var counts, color, count, split;
+	var counts, color, count, split, source, data, other, type;
 	if (!renderPie.paper) {
 		renderPie.paper = Raphael("pie", 700, 700)
 	}
+	data = globalData;
 	color = $('#pie_option').val();
 	count = $('#pie_count').val();
-	counts = Data.count(globalData, color);
+	source = $('#pie_source').val();
+	type = $('#pie_type').val();
+	if (source === 'frontpage') {
+		data = Data.filter(data, {}, {maxFront: 101});
+	}
+	if (source === 'all') {
+		data = Data.filter(data, {}, {maxAll: 0});
+	}
+	if (type !== 'all') {
+		data = Data.filter(data, {type: type});
+	}
+	counts = Data.count(data, color);
 	counts = Data.sortObject(counts);
 	split = Data.split(counts, count);
 	counts = split.first;
-	counts['Other'] = Data.sum(split.last);
+	other = Data.sum(split.last);
+	if (other) {
+		counts['Other'] = other;
+	}
+	renderPie.paper.clear();
 	renderPie.paper.pieChart(350, 350, 200, counts, "#fff");
 }
 
