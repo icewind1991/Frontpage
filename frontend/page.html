@@ -10,6 +10,50 @@
 		<script src="frontend/frontend.js"></script>
 	</head>
 	<body>
-		<div id="holder">
+		<label for="scatter_x">X Axis</label>
+		<select id="scatter_x">
+			<option value="maxAll">Max /r/all</option>
+			<option value="maxFront">Max frontpage</option>
+			<option value="up">Upvotes</option>
+			<option value="down">Downvotes</option>
+			<option value="comments">Comments</option>
+			<option value="durationAll">Time on /r/all</option>
+			<option value="durationFront">Time on frontpage</option>
+			<option value="title_length">Title length</option>
+			<option value="self_length">Self length</option>
+		</select>
+		<label for="scatter_y">Y Axis</label>
+		<select id="scatter_y">
+			<option value="maxAll">Max /r/all</option>
+			<option value="maxFront">Max frontpage</option>
+			<option value="up">Upvotes</option>
+			<option value="down">Downvotes</option>
+			<option value="comments">Comments</option>
+			<option value="durationAll">Time on /r/all</option>
+			<option value="durationFront">Time on frontpage</option>
+			<option value="title_length">Title length</option>
+			<option value="self_length">Self length</option>
+		</select>
+		<label for="scatter_color">Color</label>
+		<select id="scatter_color">
+			<option value="subreddit">Subreddit</option>
+			<option value="type">Type</option>
+			<option value="domain">Domain</option>
+			<option value="nsfwLabel">NSFW</option>
+		</select>
+		<label for="scatter_color_count">Max color count</label>
+		<input id="scatter_color_count" type="number" value="10" />
+
+		<div id="scatter"></div>
+
+		<select id="pie_option">
+			<option value="subreddit">Subreddit</option>
+			<option value="type">Type</option>
+			<option value="domain">Domain</option>
+			<option value="nsfwLabel">NSFW</option>
+		</select>
+		<label for="pie_count">Max colors</label>
+		<input id="pie_count" type="number" value="10" />
+		<div id="pie"></div>
 	</body>
 </html>

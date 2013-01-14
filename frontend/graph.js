@@ -1,7 +1,9 @@
 Raphael.fn.scatterPlot = function (width, height, groups) {
 	var paper = this,
 		count = Data.size(groups),
-		name, i, scaleX, scaleY, maxX = 0, maxY = 0, color, circle;
+		name, i, scaleX, scaleY, maxX = 0, maxY = 0,
+		color, circle, txt,
+		labels = {};
 
 	for (name in groups) {
 		if (groups.hasOwnProperty(name)) {
@@ -30,11 +32,17 @@ Raphael.fn.scatterPlot = function (width, height, groups) {
 				circle.stop().animate({
 					transform: "s2"
 				}, 100, "elastic");
+				labels[label].stop().attr({
+					"font-weight": "bold"
+				});
 			}.bind(null, circle));
 			circle.mouseout(function (circle) {
 				circle.stop().animate({
 					transform: ""
 				}, 100, "elastic");
+				labels[label].stop().attr({
+					"font-weight": ""
+				});
 			}.bind(null, circle));
 		}
 	};
@@ -47,12 +55,13 @@ Raphael.fn.scatterPlot = function (width, height, groups) {
 			circle = paper.circle(5, i * 15, 3);
 			circle.attr("fill", color);
 			circle.attr("stroke", color);
-			paper.text(17, i * 15, name).attr({
+			txt = paper.text(17, i * 15, name).attr({
 				fill: "black",
 				stroke: "none",
 				"font-size": 15,
 				'text-anchor': 'start'
 			});
+			labels[name] = txt;
 		}
 	}
 };

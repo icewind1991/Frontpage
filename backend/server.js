@@ -54,7 +54,7 @@ configReader.getConfig().then(function (config) {
 		dataServer(store.subReddits, '/data/subreddits');
 		dataServer(store.subscribers, '/data/subscribers');
 		dataServer(store.types, '/data/types');
-		dataServer(store.postIds, '/data/postIds');
+		dataServer(store.postIds, '/data/postids');
 		dataServer(store.authors, '/data/authors');
 		dataServer(store.posts, '/data/posts');
 		dataServer(store.positions, '/data/positions');
