@@ -75,7 +75,10 @@ function processData(domains, subreddits, subscribers, authors, posts, positions
 			startFront = 0;
 			posts[i].durationAll = 0;
 			posts[i].durationFront = 0;
+			posts[i].positionsAll = [];
+			posts[i].positionsFront = [];
 			for (j = 0; j < pos.length; j++) {
+				pos[j].age = (pos[j].time - posts[i].create) / 60;
 				if (pos[j].subreddit == allId) {
 					if (pos[j].position < posts[i].maxAll) {
 						posts[i].maxAll = pos[j].position;
@@ -84,6 +87,7 @@ function processData(domains, subreddits, subscribers, authors, posts, positions
 						startAll = pos[j].time;
 					}
 					posts[i].durationAll = pos[j].time - startAll;
+					posts[i].positionsAll.push(pos[j]);
 				}
 				if (pos[j].subreddit == frontId) {
 					if (pos[j].position < posts[i].maxFront) {
@@ -93,6 +97,7 @@ function processData(domains, subreddits, subscribers, authors, posts, positions
 						startFront = pos[j].time;
 					}
 					posts[i].durationFront = pos[j].time - startFront;
+					posts[i].positionsFront.push(pos[j]);
 				}
 			}
 		}

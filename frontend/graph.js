@@ -1,9 +1,36 @@
-Raphael.fn.scatterPlot = function (width, height, groups) {
+Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale) {
+	var paper, i, txt;
+	paper = this;
+	paper.path('M 50, 5 L 50, ' + (height + 10) + ' L ' + (width + 55) + ', ' + (height + 10));
+	for (i = 0; i < width; i += 50) {
+		paper.path('M ' + (60 + i) + ', ' + (height + 10) + ' L ' + (60 + i) + ', ' + (height + 5));
+		paper.text((60 + i), (height + 20), Math.round(i / xScale));
+	}
+	for (i = 0; i < height; i += 50) {
+		paper.path('M 50, ' + (height - i) + ' L 55, ' + (height - i));
+		txt = paper.text(45, (height - i), Math.round(i / yScale));
+		txt.attr({
+			'text-anchor': 'end'
+		});
+	}
+	txt = paper.text(width / 2, height + 40, xTitle);
+	txt.attr({
+		"font-size": 15
+	});
+	txt = paper.text(7, height / 2, yTitle);
+	txt.attr({
+		'transform': 'r90',
+		"font-size": 15
+	});
+};
+
+Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel) {
 	var paper = this,
 		count = Data.size(groups),
 		name, i, scaleX, scaleY, maxX = 0, maxY = 0,
 		color, circle, txt,
 		labels = {};
+
 
 	for (name in groups) {
 		if (groups.hasOwnProperty(name)) {
@@ -17,13 +44,15 @@ Raphael.fn.scatterPlot = function (width, height, groups) {
 			}
 		}
 	}
-	scaleX = (width - 10) / maxX;
-	scaleY = (height - 10) / maxY;
+	scaleX = (width) / maxX;
+	scaleY = (height) / maxY;
+
+	paper.drawAxis(width, height, xLabel, yLabel, scaleX, scaleY);
 
 	plotGroup = function (data, label, color) {
 		var x, y, i;
 		for (i = 0; i < data.length; i++) {
-			x = (data[i][0] * scaleX) + 5;
+			x = (data[i][0] * scaleX) + 55;
 			y = (height - data[i][1] * scaleY) + 5;
 			var circle = paper.circle(x, y, 3);
 			circle.attr("fill", color);
@@ -52,10 +81,10 @@ Raphael.fn.scatterPlot = function (width, height, groups) {
 			color = Raphael.hsb(i / count, 1, 1);
 			plotGroup(groups[name], name, color);
 			i++;
-			circle = paper.circle(5, i * 15, 3);
+			circle = paper.circle(width + 75, i * 15, 3);
 			circle.attr("fill", color);
 			circle.attr("stroke", color);
-			txt = paper.text(17, i * 15, name).attr({
+			txt = paper.text(width + 82, i * 15, name).attr({
 				fill: "black",
 				stroke: "none",
 				"font-size": 15,
@@ -66,13 +95,13 @@ Raphael.fn.scatterPlot = function (width, height, groups) {
 	}
 };
 
-Raphael.fn.pieChart = function (cx, cy, r, data, stroke) {
+Raphael.fn.pieChart = function (cx, cy, r, data, stroke, lx, ly) {
 	var paper = this,
 		rad = Math.PI / 180,
 		chart = this.set(),
 		labels = Object.keys(data),
-		values = [];
-	for (var i = 0; i < labels.length; i++) {
+		values = [], i;
+	for (i = 0; i < labels.length; i++) {
 		values.push(data[labels[i]]);
 	}
 
@@ -95,6 +124,7 @@ Raphael.fn.pieChart = function (cx, cy, r, data, stroke) {
 				ms = 500,
 				delta = 30,
 				bcolor = Raphael.hsb(start, 1, 1),
+				circle, txt,
 				p = sector(cx, cy, r, angle, angle + angleplus, {
 					fill: "90-" + bcolor + "-" + color,
 					stroke: stroke,
@@ -121,6 +151,15 @@ Raphael.fn.pieChart = function (cx, cy, r, data, stroke) {
 						opacity: 0
 					}, ms);
 				});
+			circle = paper.circle(lx, ly + j * 15, 3);
+			circle.attr("fill", color);
+			circle.attr("stroke", color);
+			paper.text(lx + 10, ly + j * 15, labels[j]).attr({
+				fill: "black",
+				"font-size": 15,
+				'text-anchor': 'start'
+			});
+			labels[name] = txt;
 			angle += angleplus;
 			chart.push(p);
 			chart.push(txt);
@@ -133,4 +172,91 @@ Raphael.fn.pieChart = function (cx, cy, r, data, stroke) {
 		process(i);
 	}
 	return chart;
+};
+
+Raphael.fn.drawGrid = function (x, y, w, h, wv, hv, color) {
+	color = color || "#000";
+	var path = ["M", Math.round(x) + .5, Math.round(y) + .5, "L", Math.round(x + w) + .5, Math.round(y) + .5, Math.round(x + w) + .5, Math.round(y + h) + .5, Math.round(x) + .5, Math.round(y + h) + .5, Math.round(x) + .5, Math.round(y) + .5],
+		rowHeight = h / hv,
+		columnWidth = w / wv;
+	for (var i = 1; i < hv; i++) {
+		path = path.concat(["M", Math.round(x) + .5, Math.round(y + i * rowHeight) + .5, "H", Math.round(x + w) + .5]);
+	}
+	for (i = 1; i < wv; i++) {
+		path = path.concat(["M", Math.round(x + i * columnWidth) + .5, Math.round(y) + .5, "V", Math.round(y + h) + .5]);
+	}
+	return this.path(path.join(",")).attr({
+		stroke: color
+	});
+};
+
+Raphael.fn.lineGraph = function (width, height, groups) {
+	var maxX = 0, maxY = 0, scaleX, scaleY, name, i, data, colorIndex = 0, groupCount = 0, color, labels = {}, paper;
+	paper = this;
+	for (name in groups) {
+		if (groups.hasOwnProperty(name)) {
+			groupCount++;
+			for (i = 0; i < groups[name].length; i++) {
+				if (groups[name][i][0] > maxX) {
+					maxX = groups[name][i][0];
+				}
+				if (groups[name][i][1] > maxY) {
+					maxY = groups[name][i][1];
+				}
+			}
+		}
+	}
+	scaleX = (width - 10) / maxX;
+	scaleY = (height - 10) / maxY;
+	drawGroup = function (name, data, color) {
+		var x, y, line, path, txt, circle, i;
+		x = data[0][0] * scaleX;
+		y = height - data[0][1] * scaleY;
+		path = 'M ' + x + ',' + y;
+		for (i = 1; i < data.length; i++) {
+			x = data[i][0] * scaleX;
+			y = height - data[i][1] * scaleY;
+			path += ' L ' + x + ',' + y;
+		}
+		line = paper.path(path);
+		line.attr({
+			'stroke': color,
+			"stroke-width": 2
+		});
+
+		line.mouseover(function () {
+			this.stop().animate({
+				"stroke-width": 3
+			}, 100, "elastic");
+			labels[name].stop().attr({
+				"font-weight": "bold"
+			});
+		});
+		line.mouseout(function () {
+			this.stop().animate({
+				"stroke-width": 2
+			}, 100, "elastic");
+			labels[name].stop().attr({
+				"font-weight": ""
+			});
+		});
+		circle = paper.circle(5, colorIndex * 15, 3);
+		circle.attr("fill", color);
+		circle.attr("stroke", color);
+		txt = paper.text(17, colorIndex * 15, name).attr({
+			fill: "black",
+			stroke: "none",
+			"font-size": 15,
+			'text-anchor': 'start'
+		});
+		labels[name] = txt;
+	};
+	for (name in groups) {
+		if (groups.hasOwnProperty(name)) {
+			data = groups[name];
+			color = Raphael.hsb(colorIndex / groupCount, 1, 1);
+			colorIndex++;
+			drawGroup(name, data, color);
+		}
+	}
 };
