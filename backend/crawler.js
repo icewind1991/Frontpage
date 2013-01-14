@@ -82,7 +82,7 @@ function savePost(post) {
 	data.comments = post.num_comments;
 	data.create = post.created_utc;
 	data.length = post.selftext.length;
-	data.title= post.title;
+	data.title = post.title;
 	data.nsfw = post.over_18;
 	if (post.is_self) {
 		data.type = store.types.self;
@@ -90,7 +90,9 @@ function savePost(post) {
 		extension = post.url.substr(-4);
 		if (post.domain === 'youtube.com') {
 			data.type = store.types.video;
-		} else if (extension === '.jpg' || extension === '.png' || post.domain === 'imgur.com') {
+		} else if (extension === '.jpg' || extension === '.png' ||
+			post.domain === 'imgur.com' || post.domain === 'quickmeme.com' || post.domain === 'postimage.org' ||
+			post.domain === 'qkme.me' || post.domain === 'gifboom.com') {
 			data.type = store.types.image;
 		} else {
 			data.type = store.types.link;
