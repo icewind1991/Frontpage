@@ -46,6 +46,7 @@ registerPage('../frontend/frontend.js', '/frontend/frontend.js');
 registerPage('../frontend/loader.js', '/frontend/loader.js');
 registerPage('../frontend/rsvp.min.js', '/frontend/rsvp.min.js');
 registerPage('../frontend/graph.js', '/frontend/graph.js');
+registerPage('../frontend/data.js', '/frontend/data.js');
 registerPage('../frontend/raphael-min.js', '/frontend/raphael-min.js');
 
 configReader.getConfig().then(function (config) {
