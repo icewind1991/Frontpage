@@ -1,14 +1,22 @@
-Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale) {
+Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale, flipX, flipY) {
 	var paper, i, txt;
 	paper = this;
 	paper.path('M 50, 5 L 50, ' + (height + 10) + ' L ' + (width + 55) + ', ' + (height + 10));
 	for (i = 0; i < width; i += 50) {
 		paper.path('M ' + (60 + i) + ', ' + (height + 10) + ' L ' + (60 + i) + ', ' + (height + 5));
-		paper.text((60 + i), (height + 20), Math.round(i / xScale));
+		if (flipX) {
+			paper.text((60 + (width - i)), (height + 20), Math.round(i / xScale));
+		} else {
+			paper.text((60 + i), (height + 20), Math.round(i / xScale));
+		}
 	}
 	for (i = 0; i < height; i += 50) {
 		paper.path('M 50, ' + (height - i) + ' L 55, ' + (height - i));
-		txt = paper.text(45, (height - i), Math.round(i / yScale));
+		if (flipY) {
+			txt = paper.text(45, i, Math.round(i / yScale));
+		} else {
+			txt = paper.text(45, (height - i), Math.round(i / yScale));
+		}
 		txt.attr({
 			'text-anchor': 'end'
 		});
@@ -24,7 +32,7 @@ Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale) {
 	});
 };
 
-Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel) {
+Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel, flipX, flipY, linkIndex) {
 	var paper = this,
 		count = Data.size(groups),
 		name, i, scaleX, scaleY, maxX = 0, maxY = 0,
@@ -47,13 +55,22 @@ Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel) {
 	scaleX = (width) / maxX;
 	scaleY = (height) / maxY;
 
-	paper.drawAxis(width, height, xLabel, yLabel, scaleX, scaleY);
+	paper.drawAxis(width, height, xLabel, yLabel, scaleX, scaleY, flipX, flipY);
 
 	plotGroup = function (data, label, color) {
-		var x, y, i;
+		var x, y, i, link;
 		for (i = 0; i < data.length; i++) {
-			x = (data[i][0] * scaleX) + 55;
-			y = (height - data[i][1] * scaleY) + 5;
+			link = data[i][linkIndex];
+			if (flipX) {
+				x = ((maxX - data[i][0]) * scaleX) + 55;
+			} else {
+				x = (data[i][0] * scaleX) + 55;
+			}
+			if (flipY) {
+				y = (height - (maxY - data[i][1]) * scaleY) + 5;
+			} else {
+				y = (height - data[i][1] * scaleY) + 5;
+			}
 			var circle = paper.circle(x, y, 3);
 			circle.attr("fill", color);
 			circle.attr("stroke", color);
@@ -73,6 +90,9 @@ Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel) {
 					"font-weight": ""
 				});
 			}.bind(null, circle));
+			circle.click(function (id) {
+				window.open('http://reddit.com/' + id);
+			}.bind(null, link));
 		}
 	};
 	i = 0;

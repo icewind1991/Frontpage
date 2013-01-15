@@ -24,7 +24,7 @@ $(document).ready(function () {
 });
 
 function renderScatter() {
-	var x, y, color, count, rel = globalData, xTitle, yTitle;
+	var x, y, color, count, rel = globalData, xTitle, yTitle, flipX, flipY;
 	x = $('#scatter_x').val();
 	y = $('#scatter_y').val();
 	if (x.indexOf('All') > 1 || y.indexOf('All') > 1) {
@@ -36,11 +36,13 @@ function renderScatter() {
 	if (x == 'self_length' || y == 'self_length') {
 		rel = Data.filter(rel, {}, {self_length: 0});
 	}
+	flipX = (x.substr(0, 3) === 'max')
+	flipY = (y.substr(0, 3) === 'max')
 	color = $('#scatter_color').val();
 	count = $('#scatter_color_count').val();
 	xTitle = $('#scatter_x').children("option:selected").text();
 	yTitle = $('#scatter_y').children("option:selected").text();
-	rel = Data.select(rel, [x, y, color]);
+	rel = Data.select(rel, [x, y, color, 'redditId']);
 	rel = Data.group(rel, 2);
 	rel = Data.sortObject(rel, 'length');
 	rel = Data.first(rel, count);
@@ -48,7 +50,7 @@ function renderScatter() {
 		renderScatter.paper = Raphael("scatter", 800, 800)
 	}
 	renderScatter.paper.clear();
-	renderScatter.paper.scatterPlot(605, 605, rel, xTitle, yTitle);
+	renderScatter.paper.scatterPlot(605, 605, rel, xTitle, yTitle, flipX, flipY, 3);
 }
 renderScatter.paper = null;
 
