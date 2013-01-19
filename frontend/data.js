@@ -25,8 +25,14 @@ Data.match = function (object, filter) {
 				}
 				name = parts[0];
 			}
-			if (context[name] !== filter[name]) {
-				return false;
+			if (filter[name] instanceof Array) {
+				if (filter[name].indexOf(context[name]) === -1) {
+					return false;
+				}
+			} else {
+				if (context[name] !== filter[name]) {
+					return false;
+				}
 			}
 		}
 	}

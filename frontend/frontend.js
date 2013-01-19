@@ -1,12 +1,26 @@
 var globalData;
 $(document).ready(function () {
 	loadData().then(function (data) {
+		var option;
 		globalData = data;
+		for (var i in globalSubreddits) {
+			if (globalSubreddits.hasOwnProperty(i)) {
+				option = $('<option/>');
+				option.val(globalSubreddits[i]);
+				option.text(globalSubreddits[i]);
+				$('#scatter_filter_subreddit').append(option);
+			}
+		}
+		$('#scatter_filter_subreddit').chosen();
+
 		renderScatter();
 		$('#scatter_x').change(renderScatter);
 		$('#scatter_y').change(renderScatter);
 		$('#scatter_color').change(renderScatter);
 		$('#scatter_color_count').change(renderScatter);
+		$('#scatter_filter_all').change(renderScatter);
+		$('#scatter_filter_front').change(renderScatter);
+		$('#scatter_filter_subreddit').change(renderScatter);
 
 		renderPie();
 		$('#pie_option').change(renderPie);
@@ -24,24 +38,33 @@ $(document).ready(function () {
 });
 
 function renderScatter() {
-	var x, y, color, count, rel = globalData, xTitle, yTitle, flipX, flipY;
+	var x, y, color, count, rel = globalData, xTitle, yTitle, flipX, flipY, fit, i,
+		filterFront, filterAll, filterSub;
 	x = $('#scatter_x').val();
 	y = $('#scatter_y').val();
-	if (x.indexOf('All') > 1 || y.indexOf('All') > 1) {
+	filterAll = $('#scatter_filter_all').is(':checked');
+	filterFront = $('#scatter_filter_front').is(':checked');
+	if (x.indexOf('All') > 1 || y.indexOf('All') > 1 || filterAll) {
 		rel = Data.filter(rel, {}, {maxAll: 101});
 	}
-	if (x.indexOf('Front') > 1 || y.indexOf('Front') > 1) {
+	if (x.indexOf('Front') > 1 || y.indexOf('Front') > 1 || filterFront) {
 		rel = Data.filter(rel, {}, {maxFront: 101});
 	}
 	if (x == 'self_length' || y == 'self_length') {
 		rel = Data.filter(rel, {}, {self_length: 0});
 	}
+	filterSub = $('#scatter_filter_subreddit').val();
 	flipX = (x.substr(0, 3) === 'max')
 	flipY = (y.substr(0, 3) === 'max')
 	color = $('#scatter_color').val();
 	count = $('#scatter_color_count').val();
 	xTitle = $('#scatter_x').children("option:selected").text();
 	yTitle = $('#scatter_y').children("option:selected").text();
+	if (filterSub) {
+		for (i = 0; i < filterSub.length; i++) {
+			rel = Data.filter(rel, {subreddit: filterSub });
+		}
+	}
 	rel = Data.select(rel, [x, y, color, 'redditId']);
 	rel = Data.group(rel, 2);
 	rel = Data.sortObject(rel, 'length');

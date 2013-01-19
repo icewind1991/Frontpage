@@ -11,6 +11,8 @@ var typesReverse = {
 	4: 'Link'
 };
 
+var globalSubreddits = [];
+
 function loadData(progressListener) {
 	var promise = new RSVP.Promise();
 	if (!progressListener) {
@@ -20,6 +22,7 @@ function loadData(progressListener) {
 	progressListener.trigger('load');
 	loadSingle('domains', progressListener).then(function (domains) {
 		loadSingle('subreddits', progressListener).then(function (subreddits) {
+			globalSubreddits = subreddits;
 			loadSingle('subscribers', progressListener).then(function (subscribers) {
 				loadSingle('authors', progressListener).then(function (authors) {
 					loadSingle('posts', progressListener).then(function (posts) {
