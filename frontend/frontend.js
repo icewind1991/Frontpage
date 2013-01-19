@@ -116,7 +116,7 @@ function renderPie() {
 		counts['Other'] = other;
 	}
 	renderPie.paper.clear();
-	renderPie.paper.pieChart(350, 350, 200, counts, "#fff", 10, 100);
+	renderPie.paper.pieChart(450, 350, 200, counts, "#fff", 10, 100);
 }
 renderPie.paper = null;
 
