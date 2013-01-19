@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<script src="frontend/loader.js"></script>
-		<script src="frontend/rsvp.min.js"></script>
-		<script src="frontend/raphael-min.js"></script>
+		<script src="loader.js"></script>
+		<script src="rsvp.min.js"></script>
+		<script src="raphael-min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-		<link href="frontend/frontend.css" rel="stylesheet" />
-		<script src="frontend/graph.js"></script>
-		<script src="frontend/data.js"></script>
-		<script src="frontend/matrix_processor.js"></script>
-		<script src="frontend/frontend.js"></script>
+		<link href="frontend.css" rel="stylesheet" />
+		<link href="chosen.css" rel="stylesheet" />
+		<script src="graph.js"></script>
+		<script src="data.js"></script>
+		<script src="matrix_processor.js"></script>
+		<script src="chosen.jquery.min.js"></script>
+		<script src="frontend.js"></script>
 	</head>
 	<body>
 		<label for="scatter_x">X Axis</label>
@@ -45,6 +47,16 @@
 		</select>
 		<label for="scatter_color_count">Max color count</label>
 		<input id="scatter_color_count" type="number" value="10" />
+		<br>
+		Only:
+		<label for="scatter_filter_all">/r/all</label>
+		<input type="checkbox" id="scatter_filter_all" />
+		<label for="scatter_filter_front">frontpage</label>
+		<input type="checkbox" id="scatter_filter_front" />
+		<label for="scatter_filter_subreddit">Subreddit</label>
+		<select id="scatter_filter_subreddit" multiple="multiple"> </select>
+
+		<p />
 
 		<div id="scatter"></div>
 
@@ -72,9 +84,11 @@
 			<option value="type">Type</option>
 			<option value="domain">Domain</option>
 			<option value="nsfwLabel">NSFW</option>
+			<option value="author">Author</option>
 		</select>
 		<label for="pie_count">Max colors</label>
 		<input id="pie_count" type="number" value="10" />
+
 		<div id="pie"></div>
 
 		<p>Average post progression over time</p>
@@ -96,6 +110,7 @@
 		<input id="line_count" type="number" value="10" />
 		<label for="line_order">Order</label>
 		<input id="line_order" type="number" value="2" />
+
 		<div id="line"></div>
 	</body>
 </html>

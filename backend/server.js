@@ -6,32 +6,6 @@ var Promise = nodePromise.Promise;
 var configReader = require('./config');
 var app = express();
 
-function loadFile(file) {
-	if (!loadFile.cache[file] || !loadFile.doCache) {
-		loadFile.cache[file] = new Promise();
-		fs.readFile(file, 'utf8', function (err, page) {
-			if (err) throw err;
-			loadFile.cache[file].resolve(page)
-		});
-	}
-	return loadFile.cache[file];
-}
-loadFile.cache = {};
-loadFile.doCache = false;
-
-function registerPage(file, url) {
-	app.get(url, function (req, res) {
-		loadFile(file).then(function (page) {
-			if (url.substr(-3) === '.js') {
-				res.setHeader('Content-Type', 'application/javascript');
-			} else if (url.substr(-4) === '.css') {
-				res.setHeader('Content-Type', 'text/css');
-			}
-			res.send(page);
-		});
-	});
-}
-
 function dataServer(source, url) {
 	app.get(url, function (req, res) {
 		source.get().then(function (data) {
@@ -40,15 +14,7 @@ function dataServer(source, url) {
 	});
 }
 
-registerPage('../frontend/page.html', '/');
-registerPage('../frontend/frontend.css', '/frontend/frontend.css');
-registerPage('../frontend/frontend.js', '/frontend/frontend.js');
-registerPage('../frontend/loader.js', '/frontend/loader.js');
-registerPage('../frontend/rsvp.min.js', '/frontend/rsvp.min.js');
-registerPage('../frontend/graph.js', '/frontend/graph.js');
-registerPage('../frontend/data.js', '/frontend/data.js');
-registerPage('../frontend/matrix_processor.js', '/frontend/matrix_processor.js');
-registerPage('../frontend/raphael-min.js', '/frontend/raphael-min.js');
+app.use(express.static(__dirname + '/../frontend'));
 
 configReader.getConfig().then(function (config) {
 	store.connect(config.database).then(function () {
