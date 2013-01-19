@@ -90,11 +90,15 @@ function savePost(post) {
 		extension = post.url.substr(-4);
 		if (post.domain === 'youtube.com') {
 			data.type = store.types.video;
-		} else if (extension === '.jpg' || extension === '.png' ||
+		} else if (extension === '.jpg' || extension === '.png' || extension === '.gif' ||
 			post.domain === 'imgur.com' || post.domain === 'quickmeme.com' || post.domain === 'postimage.org' ||
-			post.domain === 'qkme.me' || post.domain === 'gifboom.com') {
+			post.domain === 'qkme.me' || post.domain === 'gifboom.com' || post.domain === 'minus.com' ||
+			post.domain === '4gifs.com' || post.domain === 'gifbin.com' || post.domain === 'media.tumblr.com' ||
+			post.domain === 'imgflip.com'
+			) {
 			data.type = store.types.image;
-		} else {
+		}
+		else {
 			data.type = store.types.link;
 		}
 	}
