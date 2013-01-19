@@ -27,7 +27,5 @@ configReader.getConfig().then(function (config) {
 		dataServer(store.posts, '/data/posts');
 		dataServer(store.positions, '/data/positions');
 	});
+	app.listen(config.port);
 });
-
-
-app.listen(3000);
