@@ -43,7 +43,7 @@ function loadData(progressListener) {
 }
 
 function processData(domains, subreddits, subscribers, authors, posts, positions, postIds) {
-	var i, j, id, startAll, startFront, postPositions = {}, allId, frontId;
+	var i, j, id, startAll, startFront, postPositions = {}, allId, frontId, change, lastAll, date;
 	for (i = 0; i < positions.length; i++) {
 		id = positions[i].id;
 		if (!postPositions[id]) {
@@ -80,9 +80,21 @@ function processData(domains, subreddits, subscribers, authors, posts, positions
 			posts[i].durationFront = 0;
 			posts[i].positionsAll = [];
 			posts[i].positionsFront = [];
+			posts[i].changes = [];
+			lastAll = false;
 			for (j = 0; j < pos.length; j++) {
 				pos[j].age = (pos[j].time - posts[i].create) / 60;
 				if (pos[j].subreddit == allId) {
+					if (lastAll) {
+						date = new Date(pos[j].time * 1000);
+						change = {};
+						change.up = pos[j].up - lastAll.up;
+						change.down = pos[j].down - lastAll.down;
+						change.comments = pos[j].comments - lastAll.comments;
+						change.day = date.getDay();
+						change.time = date.getUTCHours() * 60 + date.getUTCMinutes();
+						posts[i].changes.push(change);
+					}
 					if (pos[j].position < posts[i].maxAll) {
 						posts[i].maxAll = pos[j].position;
 					}
@@ -91,6 +103,7 @@ function processData(domains, subreddits, subscribers, authors, posts, positions
 					}
 					posts[i].durationAll = pos[j].time - startAll;
 					posts[i].positionsAll.push(pos[j]);
+					lastAll = pos[j];
 				}
 				if (pos[j].subreddit == frontId) {
 					if (pos[j].position < posts[i].maxFront) {

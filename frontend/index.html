@@ -56,7 +56,7 @@
 		<label for="scatter_filter_subreddit">Subreddit</label>
 		<select id="scatter_filter_subreddit" multiple="multiple"> </select>
 
-		<p />
+		<p></p>
 
 		<div id="scatter"></div>
 
@@ -112,5 +112,37 @@
 		<input id="line_order" type="number" value="2" />
 
 		<div id="line"></div>
+
+		<label for="time_color">Color</label>
+		<select id="time_color">
+			<option value="subreddit">Subreddit</option>
+			<option value="type">Type</option>
+			<option value="domain">Domain</option>
+			<option value="nsfwLabel">NSFW</option>
+			<option value="none">None</option>
+		</select>
+		<label for="time_y">Y Axis</label>
+		<select id="time_y">
+			<option value="up">Upvotes</option>
+			<option value="down">Downvotes</option>
+			<option value="comments">Comments</option>
+		</select>
+		<label for="time_type">Type</label>
+		<select id="time_type">
+			<option value="all">All</option>
+			<option value="Image">Image</option>
+			<option value="Video">Video</option>
+			<option value="Link">Link</option>
+			<option value="Self">Self</option>
+		</select>
+		<label for="time_nsfw">NSFW</label>
+		<select id="time_nsfw">
+			<option value="all">All</option>
+			<option value="NSFW">NSFW</option>
+			<option value="SFW">SWF</option>
+		</select>
+		<label for="time_count">Max colors</label>
+		<input id="time_count" type="number" value="10" />
+		<div id="time"></div>
 	</body>
 </html>

@@ -1,26 +1,25 @@
-Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale, flipX, flipY) {
+Raphael.fn.drawGenericAxis = function (width, height, xTitle, yTitle, xSteps, ySteps) {
 	var paper, i, txt;
 	paper = this;
 	paper.path('M 50, 5 L 50, ' + (height + 10) + ' L ' + (width + 55) + ', ' + (height + 10));
-	for (i = 0; i < width; i += 50) {
-		paper.path('M ' + (60 + i) + ', ' + (height + 10) + ' L ' + (60 + i) + ', ' + (height + 5));
-		if (flipX) {
-			paper.text((60 + (width - i)), (height + 20), Math.round(i / xScale));
-		} else {
-			paper.text((60 + i), (height + 20), Math.round(i / xScale));
+	for (i in xSteps) {
+		if (xSteps.hasOwnProperty(i)) {
+			i = parseInt(i, 10);
+			paper.path('M ' + (55 + i) + ', ' + (height + 10) + ' L ' + (55 + i) + ', ' + (height + 5));
+			paper.text((55 + i), (height + 20), xSteps[i]);
 		}
 	}
-	for (i = 0; i < height; i += 50) {
-		paper.path('M 50, ' + (height - i) + ' L 55, ' + (height - i));
-		if (flipY) {
-			txt = paper.text(45, i, Math.round(i / yScale));
-		} else {
-			txt = paper.text(45, (height - i), Math.round(i / yScale));
+	for (i in ySteps) {
+		if (ySteps.hasOwnProperty(i)) {
+			i = parseInt(i, 10);
+			paper.path('M 50, ' + (5 + height - i) + ' L 55, ' + (5 + height - i));
+			txt = paper.text(45, (5 + height - i), ySteps[i]);
+			txt.attr({
+				'text-anchor': 'end'
+			});
 		}
-		txt.attr({
-			'text-anchor': 'end'
-		});
 	}
+
 	txt = paper.text(width / 2, height + 40, xTitle);
 	txt.attr({
 		"font-size": 15
@@ -30,6 +29,25 @@ Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale, f
 		'transform': 'r90',
 		"font-size": 15
 	});
+};
+
+Raphael.fn.drawAxis = function (width, height, xTitle, yTitle, xScale, yScale, flipX, flipY) {
+	var i, xSteps = {}, ySteps = {};
+	for (i = 0; i < width; i += 50) {
+		if (flipX) {
+			xSteps[width - i] = Math.round(i / xScale);
+		} else {
+			xSteps[i] = Math.round(i / xScale);
+		}
+	}
+	for (i = 0; i < height; i += 50) {
+		if (flipY) {
+			ySteps[height - i] = Math.round(i / yScale);
+		} else {
+			ySteps[i] = Math.round(i / yScale);
+		}
+	}
+	this.drawGenericAxis(width, height, xTitle, yTitle, xSteps, ySteps);
 };
 
 Raphael.fn.scatterPlot = function (width, height, groups, xLabel, yLabel, flipX, flipY, linkIndex) {
@@ -211,7 +229,9 @@ Raphael.fn.drawGrid = function (x, y, w, h, wv, hv, color) {
 };
 
 Raphael.fn.lineGraph = function (width, height, groups) {
-	var maxX = 0, maxY = 0, scaleX, scaleY, name, i, data, colorIndex = 0, groupCount = 0, color, labels = {}, paper;
+	var maxX = 0, maxY = 0, scaleX, scaleY, name, i, data, colorIndex = 0, groupCount = 0, color, labels = {}, paper, xOff, yOff;
+	xOff = 55;
+	yOff = 5;
 	paper = this;
 	for (name in groups) {
 		if (groups.hasOwnProperty(name)) {
@@ -230,12 +250,12 @@ Raphael.fn.lineGraph = function (width, height, groups) {
 	scaleY = (height - 10) / maxY;
 	drawGroup = function (name, data, color) {
 		var x, y, line, path, txt, circle, i;
-		x = data[0][0] * scaleX;
-		y = height - data[0][1] * scaleY;
+		x = data[0][0] * scaleX + xOff;
+		y = height - data[0][1] * scaleY + yOff;
 		path = 'M ' + x + ',' + y;
 		for (i = 1; i < data.length; i++) {
-			x = data[i][0] * scaleX;
-			y = height - data[i][1] * scaleY;
+			x = data[i][0] * scaleX + xOff;
+			y = height - data[i][1] * scaleY + yOff;
 			path += ' L ' + x + ',' + y;
 		}
 		line = paper.path(path);
@@ -260,10 +280,10 @@ Raphael.fn.lineGraph = function (width, height, groups) {
 				"font-weight": ""
 			});
 		});
-		circle = paper.circle(5, colorIndex * 15, 3);
+		circle = paper.circle(width + xOff + 5, colorIndex * 15, 3);
 		circle.attr("fill", color);
 		circle.attr("stroke", color);
-		txt = paper.text(17, colorIndex * 15, name).attr({
+		txt = paper.text(width + xOff + 17, colorIndex * 15, name).attr({
 			fill: "black",
 			stroke: "none",
 			"font-size": 15,

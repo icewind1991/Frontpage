@@ -8,6 +8,34 @@ Data.map = function (data, fn) {
 	return result;
 };
 
+Data.toArray = function (data) {
+	var result = [], i;
+	for (i in data) {
+		if (data.hasOwnProperty(i)) {
+			result.push(data[i]);
+		}
+	}
+	return result;
+};
+
+Data.movingAverage = function (data, size) {
+	var result = [], i, j, start, end, sum, item;
+	size = size / 2;
+	for (i = 0; i < data.length; i++) {
+		sum = 0;
+		item = [];
+		start = Math.max(0, i - size);
+		end = Math.min(data.length, i + size);
+		for (j = start; j < end; j++) {
+			sum += data[j][1];
+		}
+		item.push(data[i][0]);
+		item.push(sum / (end - start));
+		result.push(item);
+	}
+	return result;
+};
+
 Data.match = function (object, filter) {
 	var context, parts, part;
 	for (var name in filter) {
@@ -225,20 +253,24 @@ Data.sum = function (data) {
 };
 
 Data.average = function (data, index, fields) {
-	var result = {}, values = {}, name, i, j, item, sums;
+	var result = {}, values = {}, name, i, j, item, sums, indexValue;
 	for (i = 0; i < data.length; i++) {
-		if (!values[data[i][index]]) {
-			values[data[i][index]] = [];
+		indexValue = data[i][index];
+		if (!values[indexValue]) {
+			values[indexValue] = [];
 		}
 		item = {};
 		for (j = 0; j < fields.length; j++) {
 			item[fields[j]] = data[i][fields[j]];
 		}
-		values[data[i][index]].push(item);
+		values[indexValue].push(item);
 	}
 	for (name in values) {
 		if (values.hasOwnProperty(name)) {
 			sums = {};
+			for (j = 0; j < fields.length; j++) {
+				sums[j] = 0;
+			}
 			item = {};
 			for (i = 0; i < values[name].length; i++) {
 				for (j = 0; j < fields.length; j++) {

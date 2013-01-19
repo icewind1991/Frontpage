@@ -34,6 +34,13 @@ $(document).ready(function () {
 		$('#line_y').change(renderPositions);
 		$('#line_count').change(renderPositions);
 		$('#line_order').change(renderPositions);
+
+		renderTime()
+		$('#time_color').change(renderTime);
+		$('#time_count').change(renderTime);
+		$('#time_y').change(renderTime);
+		$('#time_nsfw').change(renderTime);
+		$('#time_type').change(renderTime);
 	});
 });
 
@@ -131,9 +138,8 @@ function renderPositions() {
 	for (i in data) {
 		if (data.hasOwnProperty(i)) {
 			data[i] = Data.selectOne(data[i], source);
-			data[i] = Data.flattenArray(data[i], source);
+			data[i] = Data.flattenArray(data[i]);
 			data[i] = Data.fit(data[i], x, y, order);
-//			data[i] = Data.fitAverage(data[i], x, y, order);
 		}
 	}
 	renderPositions.paper.clear();
@@ -141,3 +147,81 @@ function renderPositions() {
 
 }
 renderPositions.paper = null;
+
+function renderTime() {
+	var data, groupBy, fields, count, field, maxY = 0, i, j, height = 600, width = 800,
+		scaleY, xSteps = {}, ySteps = {}, yLabel, type, nsfw, oldData;
+	if (!renderTime.paper) {
+		renderTime.paper = Raphael("time", 1000, 700)
+	}
+	groupBy = $('#time_color').val();
+	count = $('#time_count').val();
+	field = $('#time_y').val();
+	yLabel = $('#time_y').children("option:selected").text();
+	type = $('#time_type').val();
+	nsfw = $('#time_nsfw').val();
+	data = globalData;
+	if (type !== 'all') {
+		data = Data.filter(data, {type: type});
+	}
+	if (nsfw !== 'all') {
+		data = Data.filter(data, {nsfwLabel: nsfw});
+	}
+	if (groupBy === 'none') {
+		oldData = data;
+		data = {};
+		data['All'] = oldData;
+	} else {
+		data = Data.group(data, groupBy);
+	}
+	data = Data.sortObject(data, 'length');
+	data = Data.first(data, count);
+	fields = ['up', 'down', 'comments', 'time'];
+	for (i in data) {
+		if (data.hasOwnProperty(i)) {
+			data[i] = Data.selectOne(data[i], 'changes');
+			data[i] = Data.flattenArray(data[i]);
+			data[i] = Data.average(data[i], 'time', fields);
+			data[i] = Data.toArray(data[i]);
+			data[i] = Data.select(data[i], ['time', field]);
+			data[i] = Data.movingAverage(data[i], 20);
+			for (j = 1; j < data[i].length; j++) {
+				if (data[i][j][0] - data[i][j - 1][0] > 120) { //no data for 2 hours
+					data[i].push([
+						data[i][j][0] - 10,
+						0
+					]);
+					data[i].push([
+						data[i][j - 1][0] + 10,
+						0
+					]);
+				}
+			}
+			data[i].sort(function (a, b) {
+				return a[0] - b[0];
+			});
+		}
+	}
+	for (i in data) {
+		if (data.hasOwnProperty(i)) {
+			for (j = 0; j < data[i].length; j++) {
+				if (data[i][j][1] > maxY) {
+					maxY = data[i][j][1];
+				}
+			}
+		}
+	}
+	scaleY = height / maxY;
+	for (i = 0; i <= height; i += 50) {
+		ySteps[i] = Math.round((i * scaleY) / 10);// 10 minutes interval measurements
+	}
+	j = 0;
+	for (i = 0; i <= width + 10; i += (width / 24)) {
+		xSteps[Math.round(i)] = j + ':00';
+		j++;
+	}
+	renderTime.paper.clear();
+	renderTime.paper.lineGraph(width, height, data);
+	renderTime.paper.drawGenericAxis(width, height, 'UTC time', yLabel + ' per minute', xSteps, ySteps);
+}
+renderTime.paper = null;
