@@ -6,7 +6,6 @@
 		"database": "frontpage"
 	},
 	"subreddits": [
-		"tf2",
 		"",
 		"all"
 	],
@@ -33,6 +32,6 @@
 		"movies"
 	],
 	"count": 25,
-	"interval": 300,
+	"interval": 60,
 	"subscriberInterval": 3600
 }
